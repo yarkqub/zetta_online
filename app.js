@@ -200,8 +200,8 @@ io.on('connection', function (socket) {
             //just to arrange user where user in the same room (before change room)
             var tmp_player = [];
             players.filter(function (curr) {
-                if (curr.room == socket.curr_room) { 
-                    tmp_player.push(curr); 
+                if (curr.room == socket.curr_room) {
+                    tmp_player.push(curr);
                 }
             });
             io.to(socket.curr_room).emit('updateroom', tmp_player);
@@ -210,7 +210,7 @@ io.on('connection', function (socket) {
             //leaving room
             socket.leave(socket.curr_room);
 
-            
+
             conn.query("SELECT furnis.id AS ids, furnis.uid AS uid, furnis.item_id AS item_id, furnis.room_id AS room_id, items.state AS state, furnis.x AS x, furnis.y AS y, furnis.rstate AS rotate_state, items.img AS img, items.name AS name FROM furnis JOIN items ON furnis.item_id = items.id WHERE furnis.room_id = " + conn.escape(old_room), function (err, res_furni) {
                 io.to(old_room).emit("place_furni", res_furni);
             });
@@ -230,7 +230,7 @@ io.on('connection', function (socket) {
                     socket.own_room = true;
                     players[socket.len].own_room = true;
                 }
-                else{
+                else {
                     socket.own_room = false;
                     players[socket.len].own_room = false;
                 }
@@ -421,7 +421,7 @@ io.on('connection', function (socket) {
                 });
 
             }
-            else if (data.startsWith("/cmd") && data.length == 4){
+            else if (data.startsWith("/cmd") && data.length == 4) {
                 socket.emit('send_msg', {
                     msg: "/cmd - This command list",
                     own: ">"
@@ -474,7 +474,7 @@ io.on('connection', function (socket) {
                 var time_hour = time_now.getHours();
                 var time_min = time_now.getMinutes();
                 var time_total = time_day + "/" + time_mon + " " + time_hour + ":" + time_min;
-                console.log("[" + time_total + "] " +  socket.username + ": " + data);
+                console.log("[" + time_total + "] " + socket.username + ": " + data);
                 io.to(socket.curr_room).emit('send_msg', chats);
             }
 
@@ -482,6 +482,27 @@ io.on('connection', function (socket) {
             socket.emit("mula");
         }
     });
+
+    socket.on("pickall", function () {
+        conn.query("SELECT uid FROM rooms WHERE id = " + conn.escape(socket.curr_room), function (err, res) {
+            if (res[0].uid == socket.userid) {
+                conn.query("UPDATE furnis SET room_id = '0' WHERE room_id = " + conn.escape(socket.curr_room));
+
+                var tmp_player = [];
+                players.filter(function (curr) {
+                    if (curr.room == socket.curr_room) { tmp_player.push(curr) }
+                });
+                io.to(socket.curr_room).emit("updateroom", tmp_player);
+                conn.query("SELECT furnis.id AS ids, furnis.uid AS uid, furnis.item_id AS item_id, furnis.room_id AS room_id, furnis.rstate AS rotate_state, items.state AS state, furnis.x AS x, furnis.y AS y, furnis.rstate AS rotate_state, items.img AS img, items.name AS name FROM furnis JOIN items ON furnis.item_id = items.id WHERE furnis.room_id = " + conn.escape(socket.curr_room), function (err, res) {
+                    io.to(socket.curr_room).emit("place_furni", res);
+                });
+                socket.emit('send_msg', {
+                    msg: "All furni now in your inventory.",
+                    own: "SYSTEM"
+                });
+            }
+        });
+    })
 
     socket.on("move_item", function (data) {
         if (typeof socket.len !== "undefined" || typeof players[socket.len] !== "undefined") {

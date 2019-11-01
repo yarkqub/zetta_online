@@ -171,7 +171,7 @@
             <h3>Settings</h3>
             <p>
                 <button class="w3-button w3-blue w3-round w3-small">Set door</button>
-                <button class="w3-button w3-blue w3-round w3-small">pick all</button>
+                <button class="w3-button w3-blue w3-round w3-small" id="pickall">pick all</button>
                 <button class="w3-button w3-blue w3-round w3-small">Edit room</button>
                 <button class="w3-button w3-blue w3-round w3-small">Delete room</button>
             </p>
@@ -370,7 +370,7 @@
                 socket.emit('request_room', { type: "public" });
             });
             $(document).on("click", ".goto_room", function () {
-                $("#room_settings").hide();
+                $("#settings").hide();
                 $("#room_dialog").dialog("close");
                 $("#create_room_dialog").dialog("close");
                 $("#selection").hide();
@@ -403,6 +403,10 @@
                 $(".shop_page").html("<li>No list</li>")
             }
         });
+
+        $(document).on("click", "#pickall", function(){
+            socket.emit("pickall");
+        })
 
         $(document).on("click", ".inv_item", function () {
             $("#inventory_dialog").dialog("close");
