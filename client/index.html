@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Zetta</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="jquery-ui-1.12.1/themes/zetta.css">
+    <link rel="stylesheet" href="w3.css">
+    <style>
+        canvas {
+            background-color: #000;
+        }
+
+        html {
+            overflow: hidden;
+        }
+
+        body {
+            margin: 0px;
+            overflow: hidden;
+            background-color: #1fc8db;
+            background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
+            color: #fff;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+
+<body onload="zetta_start()">
+    <div id="div_login">
+        <div class="w3-container">
+            <h3>Zetta Online</h3>
+            <div class="w3-row-padding">
+                <div class="w3-col m6 s12">
+                    <div class="w3-panel w3-light-gray w3-round">
+                        <p>
+                            <h1>Login</h1>
+                            <span class="ui-icon ui-icon-signal-diag"></span> <span class="online_cnt">...(counting...)
+                                Online</span><br>
+                            <input type="text" id="log_username" class="w3-input w3-round" placeholder="Username"><br>
+                            <input type="password" id="log_pass" class="w3-input w3-round" placeholder="Password">
+                            <hr>
+                            <button id="login" class="w3-btn w3-indigo w3-round"><span
+                                    class="ui-icon ui-icon-key"></span> Login</button> Or <button id="goto_register"
+                                class="w3-btn w3-green w3-round"><span class="ui-icon ui-icon-suitcase"></span>
+                                Register</button>
+                        </p>
+                    </div>
+                </div>
+                <div class="w3-col m6 w3-hide-small">
+                    <h3>Something here maybe... idk</h3>
+                    <img src="Screenshot_19.png" width="50%"><br>
+                    <p>Welcome to Zetta Online...</p>
+                </div>
+            </div>
+
+
+            <br>
+            <div class="w3-container w3-blue w3-round w3-card-4" style="overflow: auto; height: 200px;">
+                <hr>
+                Ps:- kalau rabun sila pakai cermin mata dulu atau mata anda akan sakit!
+                <hr>
+                <p>
+                    Daily update <br>
+                    28/10/19 :- fixed bug when other user offline. add /pickall commands. add /cmd for command list<br>
+                    27/10/19 :- Add interaction for furniture<br>
+                    26/10/19 :- Fix bug (when buy, inventory placing, add furni and order which front and back)<br>
+                    25/10/19 :- Fix bug at shop and inventory. Place furni in room<br>
+                    24/10/19 :- Add inventory<br>
+                    23/10/19 :- Add shop. Add some Icon.<br>
+                    22/10/19 :- Add credits system, standby shop and inventory<br>
+                    21/10/19 :- Fix walk user bug<br>
+                    19-20/10/19 :- Thankyou for give me a break xD<br>
+                    18/10/19 :- Add more function to rooms button (room navigator) + change interface and online
+                    count<br>
+                    17/10/19 :- use /door command to set door of your room<br>
+                    16/10/19 :- create room sendiri<br>
+                    15/10/19 :- use /look &lt;number&gt; to change room.</p>
+            </div>
+        </div>
+    </div>
+    <div id="div_register" class="prehide">
+        <div class="w3-container">
+            <h3>Zetta Online</h3>
+            <div class="w3-row-padding">
+                <div class="w3-col m6 s12">
+                    <div class="w3-panel w3-light-gray w3-round">
+                        <p>
+                            <h1>Register</h1>
+                            <input type="text" id="reg_username" placeholder="Username" class="w3-input w3-round"><br>
+                            <input type="email" id="reg_email" placeholder="Email address"
+                                class="w3-input w3-round"><br>
+                            <input type="password" id="reg_pass" placeholder="Password" class="w3-input w3-round"><br>
+                            <input type="password" id="conf_pass" placeholder="Confirm password"
+                                class="w3-input w3-round"><br>
+                            <button id="register" class="w3-btn w3-round w3-indigo">Register</button> Or <button
+                                id="goto_login" class="w3-btn w3-round w3-green">Login</button>
+                        </p>
+                    </div>
+                </div>
+                <div class="w3-col m6 s12">
+                    <div class="w3-container w3-blue w3-round w3-card-4">
+                        <p>Please make sure you complete all input form before submit =,= or... I will delete your
+                            minecraft account.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div id="div_zetta" class="prehide w3-display-container">
+
+        <input type="text" id="chatbox"
+            style="position:absolute; z-index: 5; border-radius: 4px; border: 1px solid #ccc; padding: 12px 20px; bottom: 5px;"
+            placeholder="Click here to chat..." class="w3-display-bottomleft">
+
+        <img id="tscreen" src="touchscreen.png" usemap="#tscreen" style="position: absolute; top:0px; left:0px;">
+        <map id="mapping" name="tscreen"></map>
+        <div class="w3-bar" style="position:fixed; top:8px; left:8px">
+            <button class="w3-bar-item w3-small w3-btn w3-blue w3-round" id="open_room" title="List of room"><span
+                    class="ui-icon ui-icon-home"></span> Room</button>
+            <button class="w3-bar-item w3-small w3-btn w3-blue w3-round" id="open_shop" title="Buy anything here"><span
+                    class="ui-icon ui-icon-cart"></span> Shop</button>
+            <button class="w3-bar-item w3-small w3-btn w3-blue w3-round" id="open_inventory"
+                title="Stuff what you buy">Inventory</button>
+            <div class="w3-bar-item w3-right"><span class="username">Username</span><br><span class="credits">0</span>
+                Credits</div>
+        </div>
+        <div class="w3-bar" style="position:fixed; top:60px; left:8px">
+            <a href="index.html" class="w3-bar-item w3-small w3-right w3-btn w3-red w3-round"><span class="ui-icon ui-icon-power"></span> &nbsp;</a>
+            <button class="w3-bar-item w3-small w3-right w3-btn w3-blue w3-round"><span class="ui-icon ui-icon-gear"></span></button>
+            <button class="prehide w3-bar-item w3-small w3-right w3-btn w3-blue w3-round" title="Room settings" id="room_settings"><span class="ui-icon ui-icon-home"></span></button>
+        </div>
+
+        <div id="shop_dialog" title="Shop">
+            <p>Where you can buy your furniture</p>
+            <div class="w3-row">
+                <div class="w3-col w3-light-blue s4 l4">
+                    <ul class="shop_page w3-ul w3-hoverable">
+                        <li>Shop is loading...</li>
+                    </ul>
+                </div>
+                <div class="w3-col s8 l8">
+                    <div class="shop_item_list">
+                        <p><img src="item/80a0573fad53d67.png" style="max-height: 64px; max-width:64px;">No item yet.
+                            But we place an ice cube to test under 'General' page.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="selection" class="prehide w3-panel w3-gray w3-display-right w3-margin w3-round">
+            <div id="selection_content">
+                <p>Loading....</p>
+            </div>
+        </div>
+        <div id="settings" class="prehide w3-panel w3-display-container w3-gray w3-display-topright w3-round" style="top:85px;">
+            <span onclick="this.parentElement.style.display='none'"
+  class="w3-button w3-display-topright w3-red w3-round"><span class="ui-icon ui-icon-closethick"></span></span>
+            <h3>Settings</h3>
+            <p>
+                <button class="w3-button w3-blue w3-round w3-small">Set door</button>
+                <button class="w3-button w3-blue w3-round w3-small">pick all</button>
+                <button class="w3-button w3-blue w3-round w3-small">Edit room</button>
+                <button class="w3-button w3-blue w3-round w3-small">Delete room</button>
+            </p>
+        </div>
+
+        <div id="inventory_dialog" title="Inventory">
+            <div id="inventory_content"></div>
+        </div>
+
+        <div id="confirmation_dialog">
+            <div id="confirm_content"></div>
+        </div>
+
+        <div id="room_dialog" title="Room">
+            <div id="room_tabs">
+                <ul>
+                    <li><a href="#public_room" id="open_public_room">Public Rooms</a></li>
+                    <li><a href="#all_room" id="open_all_room">All Rooms</a></li>
+                    <li><a href="#my_room" id="open_my_room">My Rooms</a></li>
+                    <li><a href="#event_room">Event Rooms</a></li>
+                </ul>
+                <div id="public_room">
+                    Public room list
+                    <ul id="public_room_list" class="w3-ul w3-border">Loading...</ul>
+                </div>
+                <div id="all_room">
+                    All room list
+                    <ul id="all_room_list" class="w3-ul w3-border">Loading...</ul>
+                </div>
+                <div id="my_room">
+                    <button id="create_room" class="w3-btn w3-green">+ Create</button>
+                    <ul id="my_room_list" class='w3-ul w3-border'>Loading...</ul>
+                </div>
+                <div id="event_room">
+                    Event room list
+                </div>
+            </div>
+        </div>
+
+        <div id="create_room_dialog" title="Create room">
+            Room name: <input type="text" id="cr_room_name" class="w3-input" placeholder="Give your room name"><br>
+            Width: <input id="cr_room_width" type="number" value="10" max="15" min="3"><br>
+            Height: <input id="cr_room_height" type="number" value="10" max="15" min="3"><br><br>
+            <button id="do_create_room" class="w3-btn w3-green">Create</button> <button id="cancel_create_room"
+                class="w3-btn w3-red">Cancel</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        console.log('%c Zetta Online | By Akob made with ❤️', 'background: #222; color: #bada55');
+
+        var socket = io();
+
+        var sid;
+
+        socket.on("connect", function () {
+            sid = socket.id
+            console.log(socket.id);
+        });
+        //    var socketConnection = io.connect();
+        //    socketConnection.on("connect", function(sckt){
+        //        console.log(socketConnection.id)
+        //    });
+
+        var username, id, hold_item, tetikus_x, tetikus_y, hold_id, rotate_state = 0, own_room = false, move_item = false;
+
+        socket.on("online_cnt", function (data) {
+            $(".online_cnt").html(data);
+        });
+
+        $(".prehide").hide();
+
+        $("#goto_register").click(function () {
+            $("#div_login").hide();
+            $("#div_register").show();
+        });
+
+        $("#goto_login").click(function () {
+            $("#div_register").hide();
+            $("#div_login").show();
+        });
+
+        $("#login").click(function () {
+            if ($("#log_username").val() && $("#log_pass").val()) {
+                socket.emit('login', { username: $("#log_username").val(), password: $("#log_pass").val() });
+            }
+            else {
+                alert("Please fill all form.");
+            }
+        });
+
+        $("#register").click(function () {
+            if ($("#reg_username").val() && $("#reg_email").val() && $("#reg_pass").val() && $("#conf_pass")) {
+                if ($("#reg_pass").val() == $("#conf_pass").val()) {
+                    socket.emit("reg", {
+                        username: $("#reg_username").val(),
+                        email: $("#reg_email").val(),
+                        password: $("#reg_pass").val()
+                    });
+                }
+                else {
+                    alert("Confirm password not match.");
+                }
+            }
+            else {
+                alert("Please fill all form.");
+            }
+        });
+
+        socket.on("reg", function (data) {
+            var ret = data.split("#");
+            if (ret[0] != "error") {
+                $("#div_register").hide();
+                $("#div_login").show();
+                $("#log_username").val($("#reg_username").val());
+                $("#log_pass").val("");
+                $("#reg_username").val("");
+                $("#reg_email").val("");
+                $("#reg_pass").val("");
+                $("#conf_pass").val("");
+                alert("Your account created. Please login now");
+            }
+            else {
+                alert(ret[1]);
+            }
+        });
+
+        //room function
+        $(function () {
+            $("#do_create_room").click(function () {
+                if ($("#cr_room_name").val()) {
+                    if ($("#cr_room_width").val() >= 3 && $("#cr_room_width").val() <= 15) {
+                        if ($("#cr_room_height").val() >= 3 && $("#cr_room_height").val() <= 15) {
+                            socket.emit('create_room', { name: $("#cr_room_name").val(), width: $("#cr_room_width").val(), height: $("#cr_room_height").val() });
+                            $("#room_dialog").dialog("close");
+                            $("#create_room_dialog").dialog("close");
+                            $("#cr_room_name").val("");
+                            socket.emit('request_room', { type: "my" });
+                        }
+                    }
+                }
+                else {
+                    $("#cr_room_name").addClass("w3-border w3-border-red");
+                }
+            });
+            $("#confirmation_dialog").dialog({
+                autoOpen: false,
+                modal: true
+            });
+            $("#room_dialog").dialog({
+                autoOpen: false,
+                maxHeight: 400
+            });
+            $("#shop_dialog").dialog({
+                autoOpen: false, maxHeight: 400, width: 300
+            });
+            $("#inventory_dialog").dialog({
+                autoOpen: false,
+                maxHeight: 400
+            });
+            $("#create_room_dialog").dialog({ autoOpen: false });
+            $("#open_shop").on("click", function () {
+                $("#shop_dialog").dialog("open");
+                socket.emit("open_shop");
+            });
+            $("#open_inventory").on("click", function () {
+                $("#inventory_content").html("");
+                $("#inventory_dialog").dialog("open");
+                socket.emit("open_inventory");
+                hold_item = "";
+            });
+            $("#open_room").on("click", function () {
+                $("#create_room_dialog").dialog("close");
+                $("#room_dialog").dialog("open");
+                socket.emit('request_room', { type: "my" });
+                socket.emit('request_room', { type: "all" });
+                socket.emit('request_room', { type: "public" });
+            });
+            $("#create_room").click(function () {
+                $("#room_dialog").dialog("close");
+                $("#create_room_dialog").dialog("open");
+            });
+            $("#cancel_create_room").click(function () {
+                $("#create_room_dialog").dialog("close");
+                $("#room_dialog").dialog("open");
+            });
+            $("#room_tabs").tabs();
+            $("#open_my_room").click(function () {
+                socket.emit('request_room', { type: "my" });
+            });
+            $("#open_all_room").click(function () {
+                socket.emit('request_room', { type: "all" });
+            });
+            $("#open_public_room").click(function () {
+                socket.emit('request_room', { type: "public" });
+            });
+            $(document).on("click", ".goto_room", function () {
+                $("#room_settings").hide();
+                $("#room_dialog").dialog("close");
+                $("#create_room_dialog").dialog("close");
+                $("#selection").hide();
+                hold_id = 0;
+                hold_item = "";
+                move_item = false;
+                socket.emit("goto_room", $(this).data("id"));
+            });
+
+        });
+        //end of main function
+
+        socket.on("inventory_item", function (data) {
+            if (data.mode == "add") {
+                $("#inventory_content").append("<button class='inv_item w3-btn w3-card-4 w3-round w3-light-blue w3-display-container' data-id='" + data.id + "' data-img='item/" + data.img.split(",")[0] + "'><img src='item/" + data.img.split(",")[0] + "'><br>" + data.name + "<span id='inv_cnt_" + data.id + "' class='w3-tag w3-blue w3-round w3-display-topright'>1</span></button>");
+            }
+            else {
+                $("#inv_cnt_" + data.id).html(data.count);
+            }
+        });
+
+        socket.on("open_shop", function (data) {
+            if (data.length > 0) {
+                $(".shop_page").html("");
+                for (var i = 0; i < data.length; i++) {
+                    $(".shop_page").append("<li id='shop_page_" + data[i].id + "' class='open_shop_page' data-id='" + data[i].id + "'>" + data[i].name + "</li>");
+                }
+            }
+            else {
+                $(".shop_page").html("<li>No list</li>")
+            }
+        });
+
+        $(document).on("click", ".inv_item", function () {
+            $("#inventory_dialog").dialog("close");
+            hold_item = $(this).data("img");
+            zetta_cursor.item.src = hold_item
+            hold_id = $(this).data("id");
+        });
+
+
+        $(document).on("click", ".open_shop_page", function () {
+            $(".open_shop_page").removeClass("w3-blue");
+            $(this).addClass("w3-blue");
+            socket.emit("open_shop_page", $(this).data("id"));
+        });
+
+        $(document).on("click", ".buy_item", function () {
+            $("#confirm_content").html("Loading...");
+            socket.emit("buy_item", $(this).data("id"));
+            $("#confirmation_dialog").dialog("open");
+        });
+
+        socket.on("buy_item", function (data) {
+            if (data.status == 1) {
+                $("#confirm_content").html("Are you sure want to buy " + data.name + " for " + data.price + " credits?");
+                $("#confirmation_dialog").dialog({
+                    title: "Confirm Purchase",
+                    buttons: [
+                        {
+                            text: "Buy",
+                            icon: "ui-icon ui-icon-check",
+                            click: function () {
+                                socket.emit("buy_", data.id);
+                                $("#inventory_content").html("");
+                                socket.emit("open_inventory");
+                                $(this).dialog("close");
+                            }
+                        },
+                        {
+                            text: "Cancel",
+                            icon: "ui-icon ui-icon-closethick",
+                            click: function () {
+                                $(this).dialog("close");
+                            }
+                        }
+                    ]
+                });
+            }
+            else {
+                $("#confirm_content").html("You don't have enough credits to buy this.");
+                $("#confirmation_dialog").dialog({
+                    title: "Notification",
+                    buttons: [
+                        {
+                            text: "Close",
+                            icon: "ui-icon ui-icon-closethick",
+                            click: function () {
+                                $(this).dialog("close");
+                            }
+                        }
+                    ]
+                });
+            }
+        });
+
+        socket.on("update_credits", function (data) {
+            $(".credits").html(data);
+        });
+
+        socket.on("open_shop_page", function (data) {
+            if (data == "clear") {
+                $(".shop_item_list").html("");
+            }
+            else {
+                if (data.id != "") {
+                    $(".shop_item_list").append("<button class='buy_item w3-btn w3-light-gray w3-round w3-margin w3-card-4' data-id='" + data.id + "'><img src='item/" + data.img.split(",")[0] + "' style='max-height: 64px;max-width: 64px;'><br>" + data.name + "<br>" + data.price + " Credits</button>");
+                }
+                else {
+                    $(".shop_item_list").append("<button class='w3-btn w3-light-gray w3-round w3-margin w3-card-4'><img src='item/" + data.img.split(",")[0] + "' style='max-height: 64px;max-width: 64px;'><br>" + data.name + "</button>");
+                }
+            }
+        });
+
+        socket.on('request_room', function (data) {
+            if (data.clear) {
+                $("#public_room_list").html("");
+                $("#my_room_list").html("");
+                $("#all_room_list").html("");
+            }
+            if (data.type == "my") {
+                if (data.id != 0) {
+                    $("#my_room_list").append("<li class='goto_room w3-hover-blue' data-id='" + data.id + "'>" + data.name + "</li>");
+                }
+                else {
+                    $("#my_room_list").append("<li class='w3-hover-blue'>" + data.name + "</li>");
+                }
+
+            }
+            if (data.type == "all") {
+                $("#all_room_list").append("<li class='goto_room w3-hover-blue' data-id='" + data.id + "'>" + data.name + " <span class='w3-badge w3-red'>" + data.cnt + "</span></li>")
+            }
+            if (data.type == "public") {
+                $("#public_room_list").append("<li class='goto_room w3-hover-blue' data-id='" + data.id + "'>" + data.name + "</li>");
+            }
+        });
+
+        $("#chatbox").keyup(function (data) {
+            if (data.which == 13) {
+                if ($("#chatbox").val()) {
+                    socket.emit("send_msg", $("#chatbox").val());
+                    $("#chatbox").val("");
+                }
+            }
+        });
+
+
+
+        socket.on("mula", function () {
+            location.reload();
+        });
+
+        socket.on("login", function (data) {
+            var ret = data.split("#");
+            if (ret[0] != "error") {
+                username = ret[1];
+                $("#div_login").hide();
+                $("#div_zetta").show();
+                id = ret[2];
+                $(".username").html(username);
+                $(".credits").html(ret[3]);
+            }
+            else {
+                alert(ret[1]);
+            }
+            socket.emit("place_furni");
+        });
+
+        $('#tscreen').on('dragstart', function (event) { event.preventDefault(); });
+        $("#tscreen").css({ top: 0, width: window.innerWidth, height: window.innerHeight });
+
+        socket.on("change_room", function (data) {
+            var zetta_map0 = data.maps;
+            var zetta_map1 = zetta_map0.split("#");
+            var zetta_map = [];
+            for (var i = 0; i < zetta_map1.length; i++) {
+                var zetta_map3 = zetta_map1[i].split(",");
+                var zetta_map4 = [];
+                for (var j = 0; j < zetta_map3.length; j++) {
+                    zetta_map4.push(Number(zetta_map3[j]));
+                }
+                zetta_map.push(zetta_map4);
+            }
+            zetta_tile.tile = zetta_map;
+            zetta_tile.map();
+            socket.emit("place_furni");
+        });
+
+        var zetta_map0 = "0,1,1,1,1,1,1,1,1,1,1#0,1,1,1,1,1,1,1,1,1,1#0,1,1,1,1,1,1,1,1,1,1#0,1,1,1,1,1,1,1,1,1,1#1,1,1,1,1,1,1,1,1,1,1#0,1,1,1,1,1,1,1,1,1,1#0,1,1,1,1,1,1,1,1,1,1#0,1,1,1,1,1,1,1,1,1,1#0,1,1,1,1,1,1,1,1,1,1#0,1,1,1,1,1,1,1,1,1,1";
+        var zetta_map1 = zetta_map0.split("#");
+        var zetta_map = [];
+        for (var i = 0; i < zetta_map1.length; i++) {
+            var zetta_map3 = zetta_map1[i].split(",");
+            var zetta_map4 = [];
+            for (var j = 0; j < zetta_map3.length; j++) {
+                zetta_map4.push(Number(zetta_map3[j]));
+            }
+            zetta_map.push(zetta_map4);
+        }
+
+        //var draw_start_x = 64;
+        //var draw_start_y = window.height - ((zetta_map.length * 16) + 10);
+        var draw_start_x = window.innerWidth / 2;
+        var draw_start_y = window.innerHeight / 2;
+        var zetta_player = [];
+        var hold_click = false;
+        var hold_map_x, hold_map_y;
+        var zetta_tile;
+        var zetta_cursor;
+        var drag = false;
+        var zetta_tmp_player = [];
+        var zetta_mov_player = [];
+        var zetta_chat = [];
+        var furniture = [];
+
+        socket.on("zetta_login", () => {
+            console.log("logged in so push the user information");
+        });
+
+        socket.on("send_msg", function (data) {
+            var own = data.own + ": " + data.msg;
+            //var location = draw_start_x + ((0 - data.loc) * 32);
+            //var location = draw_start_x + ((100 - data.loc) * 32)
+            //console.log(location);
+            zetta_chat.push(new chat_text(own));
+            for (var i = 0; i < zetta_chat.length; i++) {
+                zetta_chat[i].push_update();
+            }
+        });
+
+        socket.on("mov_player", function (data) {
+            //console.log(data);
+            zetta_tmp_player = [];
+            for (var i = 0; i < zetta_player.length; i++) {
+                var pre_x = draw_start_x + ((zetta_player[i].y - zetta_player[i].x) * 32);
+                var pre_y = draw_start_y + ((zetta_player[i].y + zetta_player[i].x) * 16) - (144 * zetta_player[i].y);
+                zetta_tmp_player.push({
+                    id: zetta_player[i].uid,
+                    x: zetta_player[i].x,
+                    y: zetta_player[i].y,
+                    pre_x: pre_x,
+                    pre_y: pre_y
+                });
+            }
+            for (var i = 0; i < data.length; i++) {
+                var target_x = draw_start_x + ((data[i].y - data[i].x) * 32);
+                var target_y = draw_start_y + ((data[i].y + data[i].x) * 16) - (144 * data[i].y);
+                var target_id = data[i].uid;
+                var optfine = zetta_tmp_player.filter(obj => {
+                    return obj.id === target_id;
+                });
+                if (optfine.pre_x > target_x) {
+                    //move to right
+                }
+            }
+        });
+
+        socket.on("updateroom", function (data) {
+            zetta_player = [];
+            zetta_player.length = 0;
+            data.sort(function (a, b) { return a.y - b.y });
+            data.sort(function (a, b) { return a.x - b.x });
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].uid == id) {
+                    own_room = data[i].own_room;
+                    if(own_room){
+                        $("#room_settings").show();
+                    }
+                    
+                }
+                zetta_player.push(new component(64, 110, "char/" + data[i].skin + ".png", data[i].x, data[i].y, data[i].uid, data[i].name, "player", 1, 0, 0));
+            }
+        });
+
+        socket.on("place_furni", function (data) {
+            data.sort(function (a, b) { return a.y - b.y });
+            data.sort(function (a, b) { return a.x - b.x });
+            for (var i = 0; i < data.length; i++) {
+                zetta_player.push(new component(64, 64, "item/" + data[i].img.split(",")[data[i].rotate_state], data[i].x, data[i].y, data[i].ids, data[i].name, "furni", data[i].state, data[i].rotate_state, data[i].img.split(",").length));
+            }
+        });
+
+
+        function zetta_start() {
+            zetta_area.start();
+            zetta_tile = new tile_set(zetta_map, draw_start_x, draw_start_y);
+            //zetta_player = new component(64, 110, "avatar0.png", 50, 120, "image");
+            //player already add manually by socket
+            zetta_tile.map();
+            zetta_cursor = new cursor(0, 0);
+        }
+
+        function cursor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.item = new Image();
+            this.update = function () {
+                ctx = zetta_area.context;
+                var pre_x = draw_start_x + ((this.y - this.x) * 32);
+                var pre_y = draw_start_y + ((Number(this.y) + Number(this.x)) * 16);
+                ctx.beginPath();
+                ctx.moveTo(pre_x, pre_y);
+                ctx.lineTo(pre_x + 32, pre_y - 16);
+                ctx.lineTo(pre_x + 64, pre_y);
+                ctx.lineTo(pre_x + 32, pre_y + 16);
+                ctx.closePath();
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                //end of draw cursor
+            };
+            this.furni = function () {
+                if (hold_item) {
+                    var pre_x = draw_start_x + ((this.y - this.x) * 32);
+                    var pre_y = draw_start_y + ((Number(this.y) + Number(this.x)) * 16);
+                    ctx.drawImage(this.item, pre_x, pre_y - 48);
+                }
+            }
+        }
+
+        $(document).on("click", ".tile", function () {
+            $("#selection").hide();
+            var res = $(this).data("tile").split(",");
+            if (hold_item) {
+                if (move_item) {
+                    socket.emit("move_item", { id: hold_id, x: res[0], y: res[1] });
+                }
+                else {
+                    socket.emit("place_item", { id: hold_id, x: res[0], y: res[1] });
+                    socket.emit("place_furni");
+                }
+                hold_item = "";
+                hold_id = 0;
+                move_item = false;
+            }
+            else {
+                var count_hit = 0;
+                for (var i = 0; i < zetta_player.length; i++) {
+                    if (zetta_player[i].x == res[0] && zetta_player[i].y == res[1]) {
+                        if (zetta_player[i].type == "furni") {
+                            $("#selection").show();
+                            if (own_room) {
+                                rotate_state = -1;
+                                $("#selection_content").html("<p>" + zetta_player[i].name + "</p><center><img src='" + zetta_player[i].image.src + "'></center><br><button id='move_furni' class='w3-btn w3-round w3-light-gray w3-tiny' data-id='" + zetta_player[i].uid + "' data-item='" + zetta_player[i].image.src + "'>Move</button><button id='rotate_furni' class='w3-btn w3-round w3-light-gray w3-tiny' data-id='" + zetta_player[i].uid + "' data-currotate='" + zetta_player[i].currotate + "' data-rstate='" + zetta_player[i].maxstate + "' data-item='" + zetta_player[i].image.src + "'>Rotate</button><button id='pick_furni' class='w3-btn w3-round w3-light-gray w3-tiny' data-id='" + zetta_player[i].uid + "'>Pick up</button><br><br>");
+                            }
+                            else {
+                                $("#selection_content").html("<p>" + zetta_player[i].name + "</p><center><img src='" + zetta_player[i].image.src + "'></center><br><br>");
+                            }
+                        }
+                        else if (zetta_player[i].type == "player") {
+                            $("#selection").show();
+                            $("#selection_content").html("<p>" + zetta_player[i].name + "</p><center><canvas id='char_canvas' width='42.5px' height='85px;'></center><br>");
+                            var c = document.getElementById("char_canvas");
+                            var cc = c.getContext("2d");
+                            var ccc = new Image();
+                            ccc.src = zetta_player[i].image.src;
+                            cc.clearRect(0, 0, 42.5, 85);
+                            cc.drawImage(ccc, 425, 340, 85, 170, 0, 0, 42.5, 85);
+                        }
+                        if (zetta_player[i].state == "0") {
+                            count_hit = 1;
+                        }
+                    }
+                }
+                if (count_hit == 0) {
+                    socket.emit("mov", { x: res[0], y: res[1] });
+                }
+
+            }
+
+        });
+
+        $(document).on("click", "#room_settings", function(){
+            $("#settings").show();
+        });
+
+        socket.on("update_pos", function (data) {
+            for (var i = 0; i < players.length; i++) {
+                if (players[i].uid == data.uid) {
+                    players[i].x = data.x;
+                    players[i].y = data.y;
+                }
+            }
+        });
+
+        function check_tile(x, y) {
+            var count_hit = 0;
+            for (var i = 0; i < zetta_player.length; i++) {
+                if (zetta_player[i].x == x && zetta_player[i].y == y) {
+                    if (zetta_player[i].state == "0") {
+                        count_hit = 1;
+                    }
+                }
+            }
+            if (count_hit == 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        //on move setel send update to server (send id and session also to verify)
+        socket.on("mov", function (data) {
+            for (var i = 0; i < zetta_player.length; i++) {
+                if (zetta_player[i].uid == data.uid) {
+                    zetta_player[i].target_x = data.x;
+                    zetta_player[i].target_y = data.y;
+                    zetta_player[i].gotoNextTile = true;
+                }
+            }
+
+            /*for(var i = 0; i < zetta_player.length; i++){
+                if(data.id == zetta_player[i].uid){
+                    zetta_player[i].x = data.x;
+                    zetta_player[i].y = data.y;
+                }
+            }*/
+        });
+
+        $(document).on("click", "#move_furni", function () {
+            hold_item = $(this).data("item");
+            hold_id = $(this).data("id");
+            zetta_cursor.item.src = hold_item;
+            move_item = true;
+        });
+        $(document).on("click", "#rotate_furni", function () {
+            // hold_item = $(this).data("item");
+            //rstate max length
+            if (rotate_state == -1) {
+                rotate_state = $(this).data("currotate");
+            }
+            if (rotate_state < ($(this).data("rstate") - 1)) {
+                rotate_state += 1;
+            } else { rotate_state = 0; }
+            //    console.log($(this).data("rstate"))
+            socket.emit("rotate_item", { id: $(this).data("id"), rstate: rotate_state });
+
+            //   rotate_item = true;
+        });
+
+        $(document).on("click", "#pick_furni", function () {
+            socket.emit("pickfurni", { id: $(this).data("id") });
+            $("#selection").hide();
+        });
+
+        $(document).on("mouseover", ".tile", function () {
+            if (!drag) {
+                var res = $(this).data("tile").split(",");
+                zetta_cursor.x = res[0];
+                zetta_cursor.y = res[1];
+            }
+        });
+
+        function tile_set(tile, x, y) {
+            this.tile = tile;
+            this.x = x;
+            this.y = y;
+            this.map = function () {
+                $("#mapping").html("");
+                for (var i = 0; i < this.tile.length; i++) {
+                    for (var j = 0; j < this.tile[i].length; j++) {
+                        if (this.tile[i][j] == 1) {
+                            var pre_x = draw_start_x + ((j - i) * 32);
+                            var pre_y = draw_start_y + ((j + i) * 16);
+                            var coords = pre_x + "," + pre_y + "," + (pre_x + 32) + "," + (pre_y - 16) + "," + (pre_x + 64) + "," + pre_y + "," + (pre_x + 32) + "," + (pre_y + 16);
+                            $("#mapping").append("<area shape='poly' coords='" + coords + "' class='tile' data-tile='" + i + "," + j + "'>");
+                        }
+                    }
+                }
+                //var coords = pre_x + "," + pre_y + "," + (pre_x+32) + "," + (pre_y-16) + "," + (pre_x+64) + "," + pre_y + "," + (pre_x+32) + "," + (pre_y +16);
+                //$("#mapping").append("<area shape='poly' coords='" + coords + "' onmouseover='' ontouchmove='' onclick='' ontouchend=''>");
+            }
+            this.update = function () {
+                ctx = zetta_area.context;
+                for (var i = 0; i < this.tile.length; i++) {
+                    //for(var j = tile[i].length; j > 1; j--){
+                    for (var j = 0; j < this.tile[i].length; j++) {
+                        if (this.tile[i][j] == 1) {
+                            var pre_x = draw_start_x + ((j - i) * 32);
+                            var pre_y = draw_start_y + ((j + i) * 16);
+                            ctx.lineWidth = 1;
+                            //draw surface of map
+                            ctx.beginPath();
+                            ctx.moveTo(pre_x, pre_y);
+                            ctx.lineTo(pre_x + 32, pre_y - 16);
+                            ctx.lineTo(pre_x + 64, pre_y);
+                            ctx.lineTo(pre_x + 32, pre_y + 16);
+                            ctx.closePath();
+                            ctx.fillStyle = "#BAFFFF";
+                            ctx.fill();
+                            ctx.strokeStyle = "#49DBFF";
+                            ctx.stroke();
+                            //left side
+                            ctx.beginPath();
+                            ctx.moveTo(pre_x, pre_y);
+                            ctx.lineTo(pre_x + 32, pre_y + 16);
+                            ctx.lineTo(pre_x + 32, pre_y + 24);
+                            ctx.lineTo(pre_x, pre_y + 8);
+                            ctx.closePath();
+                            ctx.fillStyle = "#7DD7D1";
+                            ctx.fill();
+                            ctx.strokeStyle = "#2F91CA";
+                            ctx.stroke();
+                            //right side
+                            ctx.beginPath();
+                            ctx.moveTo(pre_x + 32, pre_y + 16);
+                            ctx.lineTo(pre_x + 64, pre_y);
+                            ctx.lineTo(pre_x + 64, pre_y + 8);
+                            ctx.lineTo(pre_x + 32, pre_y + 24);
+                            ctx.closePath();
+                            ctx.fillStyle = "#6FC3C4";
+                            ctx.fill();
+                            ctx.strokeStyle = "#2988BE";
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+
+                //    ctx.beginPath();
+                //    ctx.moveTo(draw_start_x - 2, draw_start_y - 2);
+                //    ctx.lineTo(draw_start_x + 2, draw_start_y - 2);
+                //    ctx.lineTo(draw_start_x + 2, draw_start_y + 2);
+                //    ctx.lineTo(draw_start_x - 2, draw_start_y + 2);
+                //    ctx.closePath();
+                //    ctx.strokeStyle = "blue";
+                //    ctx.stroke();
+            }
+        }
+
+        //    var update_map = {
+        //        start: function(){
+        //            console.log("Hello map started. trying to get the map now...");
+        //            console.log(zetta_map);
+        //        },
+        //        update: function(){
+        //            for(var i = 0; i < zetta_map.length; i++){
+        //                for(var j = 0; j < zetta_map[i].length; j++){
+        //                    if(zetta_map[i][j] == 1){
+        //                        console.log(zetta_map[i][j]);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    } 
+
+        var zetta_area = {
+            canvas: document.createElement("canvas"),
+            start: function () {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.context = this.canvas.getContext("2d");
+                var tscreen = document.getElementById("tscreen");
+                var div_zetta = document.getElementById("div_zetta");
+                div_zetta.insertBefore(this.canvas, tscreen);
+                this.frameNo = 0;
+                this.interval = setInterval(update_zetta, 20);//default 20
+
+                document.addEventListener("touchstart", function (e) {
+                    hold_click = true;
+                    hold_map_x = e.touches[0].screenX - draw_start_x;
+                    hold_map_y = e.touches[0].screenY - draw_start_y;
+                });
+                document.addEventListener("touchmove", function (e) {
+                    if (hold_click) {
+                        var tmp2_x = -(hold_map_x - e.touches[0].screenX);
+                        var tmp2_y = -(hold_map_y - e.touches[0].screenY);
+                        draw_start_x = tmp2_x;
+                        draw_start_y = tmp2_y;
+                    }
+                });
+                document.addEventListener("touchend", function () {
+                    hold_click = false;
+                    zetta_tile.map();
+                });
+
+                tscreen.addEventListener("mousedown", function (e) {
+                    hold_click = true;
+                    hold_map_x = e.pageX - draw_start_x;
+                    hold_map_y = e.pageY - draw_start_y;
+                });
+                tscreen.addEventListener("mousemove", function (e) {
+                    tetikus_x = e.pageX;
+                    tetikus_y = e.pageY;
+                    if (hold_click) {
+                        drag = true;
+                        var tmp2_x = -(hold_map_x - e.pageX);
+                        var tmp2_y = -(hold_map_y - e.pageY);
+                        draw_start_x = tmp2_x;
+                        draw_start_y = tmp2_y;
+                    }
+                });
+                tscreen.addEventListener("mouseup", function () {
+                    if (drag) {
+                        zetta_tile.map();
+                        drag = false;
+                    }
+                    else {
+                        hold_item = "";
+                        hold_id = 0;
+                        $("#selection").hide();
+                    }
+                    hold_click = false;
+                });
+
+                var maptouch = document.getElementById("mapping");
+
+                maptouch.addEventListener("mousedown", function (e) {
+                    hold_click = true;
+                    hold_map_x = e.pageX - draw_start_x;
+                    hold_map_y = e.pageY - draw_start_y;
+
+                });
+                maptouch.addEventListener("mousemove", function (e) {
+                    if (hold_click) {
+                        drag = true;
+                        var tmp2_x = -(hold_map_x - e.pageX);
+                        var tmp2_y = -(hold_map_y - e.pageY);
+                        draw_start_x = tmp2_x;
+                        draw_start_y = tmp2_y;
+                    }
+                });
+                maptouch.addEventListener("mouseup", function () {
+                    if (drag) {
+                        zetta_tile.map();
+                        drag = false;
+                    }
+                    hold_click = false;
+                });
+            },
+            clear: function () {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+
+        function everyinterval(n) {
+            if ((zetta_area.frameNo / n) % 1 == 0) {
+                return true;
+            }
+            return false;
+        }
+
+        function chat_text(msg) {
+            this.y = 100;
+            this.x = 10; //x location left right
+            this.text = msg;
+            this.update = function () {
+                ctx = zetta_area.context;
+                ctx.font = "12px Lucida Console"
+                ctx.fillStyle = "#FF8888";
+                ctx.fillText(this.text, this.x, this.y);
+            }
+            this.push_update = function () {
+                this.y += 10;
+            }
+        }
+
+        function component(width, height, color, x, y, uid, name, type, state, currotate, maxstate) {
+            this.state = state;
+            this.type = type;
+            this.width = width;
+            this.height = height;
+            this.x = x;
+            this.y = y;
+            this.sx = 5;
+            this.sy = 2;
+            this.nx = 0;
+            this.ny = 0;
+            this.nprex = 0;
+            this.nprey = 0;
+            this.dir = 2;
+            this.maxstate = maxstate;
+            this.currotate = currotate;
+            this.target_x = this.x;
+            this.target_y = this.y;
+            this.pre_x, this.pre_y;
+            this.image = new Image();
+            this.image.src = color;
+            this.uid = uid;
+            this.name = name;
+            this.anim = 0;
+            this.gotoNextTile = false;
+            this.update = function () {
+                ctx = zetta_area.context;
+                if (this.type == "player") {
+                    this.sy = 2;
+                    if (this.dir == 0) {
+                        this.sx = 1;//top right
+                    }
+                    else if (this.dir == 1) {
+                        this.sx = 0;//right
+                    }
+                    else if (this.dir == 2) {
+                        this.sx = 5;//bottom right
+                    }
+                    else if (this.dir == 3) {
+                        this.sx = 7;//bottom
+                    }
+                    else if (this.dir == 4) {
+                        this.sx = 6;//bottom left
+                    }
+                    else if (this.dir == 5) {
+                        this.sx = 4;//left
+                    }
+                    else if (this.dir == 6) {
+                        this.sx = 3;//top left
+                    }
+                    else if (this.dir == 7) {
+                        this.sx = 2;//top
+                    }
+
+                    if (this.target_x < this.x && this.target_y == this.y) { // Move to Top Right
+                        this.dir = 0;
+                        if (this.gotoNextTile) {
+                            this.nx = this.x - 1;
+                            this.ny = this.y;
+                            this.gotoNextTile = false;
+                            this.anim = 0;
+                        }
+                        if (zetta_tile.tile[this.nx][this.ny] == 1 && check_tile(this.nx, this.ny)) {
+                            this.anim++;
+                            this.nprex = draw_start_x + ((this.ny - this.nx) * 32);
+                            this.nprey = (draw_start_y + ((this.ny + this.nx) * 16)) - 100;
+                            if (this.nprex != this.pre_x && this.nprey != this.pre_y) {
+                                if (this.anim >= 50) {
+                                    this.pre_x = this.nprex;
+                                    this.pre_y = this.nprey;
+                                }
+                                if (this.nprex > this.pre_x) {
+                                    this.pre_x += 2;
+                                }
+                                else if (this.nprex < this.pre_x) {
+                                    this.pre_x -= 2;
+                                }
+                                if (this.nprey > this.pre_y) {
+                                    this.pre_y++;
+                                }
+                                else if (this.nprey < this.pre_y) {
+                                    this.pre_y--;
+                                }
+                                if ((this.anim / 12) % 1 == 0 || (this.anim / 11) % 1 == 0) {
+                                    this.sx = 6;
+                                }
+                                else if ((this.anim / 10) % 1 == 0 || (this.anim / 9) % 1 == 0) {
+                                    this.sx = 7;
+                                }
+                                else if ((this.anim / 8) % 1 == 0 || (this.anim / 7) % 1 == 0) {
+                                    this.sx = 8;
+                                }
+                                else if ((this.anim / 6) % 1 == 0 || (this.anim / 5) % 1 == 0) {
+                                    this.sx = 9;
+                                }
+                                else if ((this.anim / 4) % 1 == 0 || (this.anim / 3) % 1 == 0) {
+                                    this.sx = 10;
+                                }
+                                else if ((this.anim / 2) % 1 == 0 || (this.anim / 1) % 1 == 0) {
+                                    this.sx = 11;
+                                }
+                                this.sy = 0;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                            else {
+                                this.gotoNextTile = true;
+                                this.x = this.nx;
+                                this.y = this.ny;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                        }
+                        else {
+                            this.target_x = this.x;
+                            this.target_y = this.y;
+                            ////socket.emit("mov", { x: this.x, y: this.y, id: this.uid });
+                        }
+                    }//end of TR
+
+                    else if (this.target_x > this.x && this.target_y == this.y) { // Move to Bottom Left
+                        this.dir = 4;
+                        if (this.gotoNextTile) {
+                            this.nx = this.x + 1;
+                            this.ny = this.y;
+                            this.gotoNextTile = false;
+                            this.anim = 0;
+                        }
+                        if (zetta_tile.tile[this.nx][this.ny] == 1 && check_tile(this.nx, this.ny)) {
+                            this.anim++;
+                            this.nprex = draw_start_x + ((this.ny - this.nx) * 32);
+                            this.nprey = (draw_start_y + ((this.ny + this.nx) * 16)) - 100;
+                            if (this.nprex != this.pre_x && this.nprey != this.pre_y) {
+                                if (this.anim >= 50) {
+                                    this.pre_x = this.nprex;
+                                    this.pre_y = this.nprey;
+                                }
+                                if (this.nprex > this.pre_x) {
+                                    this.pre_x += 2;
+                                }
+                                else if (this.nprex < this.pre_x) {
+                                    this.pre_x -= 2;
+                                }
+                                if (this.nprey > this.pre_y) {
+                                    this.pre_y++;
+                                }
+                                else if (this.nprey < this.pre_y) {
+                                    this.pre_y--;
+                                }
+                                if ((this.anim / 12) % 1 == 0 || (this.anim / 11) % 1 == 0) {
+                                    this.sx = 6;
+                                }
+                                else if ((this.anim / 10) % 1 == 0 || (this.anim / 9) % 1 == 0) {
+                                    this.sx = 7;
+                                }
+                                else if ((this.anim / 8) % 1 == 0 || (this.anim / 7) % 1 == 0) {
+                                    this.sx = 8;
+                                }
+                                else if ((this.anim / 6) % 1 == 0 || (this.anim / 5) % 1 == 0) {
+                                    this.sx = 9;
+                                }
+                                else if ((this.anim / 4) % 1 == 0 || (this.anim / 3) % 1 == 0) {
+                                    this.sx = 10;
+                                }
+                                else if ((this.anim / 2) % 1 == 0 || (this.anim / 1) % 1 == 0) {
+                                    this.sx = 11;
+                                }
+                                this.sy = 1;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                            else {
+                                this.gotoNextTile = true;
+                                this.x = this.nx;
+                                this.y = this.ny;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                        }
+                        else {
+                            this.target_x = this.x;
+                            this.target_y = this.y;
+                            //socket.emit("mov", { x: this.x, y: this.y, id: this.uid });
+                        }
+                    }//end of BL
+
+                    else if (this.target_x == this.x && this.target_y > this.y) { // Move to Bttom Right
+                        this.dir = 2;
+                        if (this.gotoNextTile) {
+                            this.nx = this.x;
+                            this.ny = this.y + 1;
+                            this.gotoNextTile = false;
+                            this.anim = 0;
+                        }
+                        if (zetta_tile.tile[this.nx][this.ny] == 1 && check_tile(this.nx, this.ny)) {
+                            this.anim++;
+                            this.nprex = draw_start_x + ((this.ny - this.nx) * 32);
+                            this.nprey = (draw_start_y + ((this.ny + this.nx) * 16)) - 100;
+                            if (this.nprex != this.pre_x && this.nprey != this.pre_y) {
+                                if (this.anim >= 50) {
+                                    this.pre_x = this.nprex;
+                                    this.pre_y = this.nprey;
+                                }
+                                if (this.nprex > this.pre_x) {
+                                    this.pre_x += 2;
+                                }
+                                else if (this.nprex < this.pre_x) {
+                                    this.pre_x -= 2;
+                                }
+                                if (this.nprey > this.pre_y) {
+                                    this.pre_y++;
+                                }
+                                else if (this.nprey < this.pre_y) {
+                                    this.pre_y--;
+                                }
+                                if ((this.anim / 12) % 1 == 0 || (this.anim / 11) % 1 == 0) {
+                                    this.sx = 12;
+                                }
+                                else if ((this.anim / 10) % 1 == 0 || (this.anim / 9) % 1 == 0) {
+                                    this.sx = 13;
+                                }
+                                else if ((this.anim / 8) % 1 == 0 || (this.anim / 7) % 1 == 0) {
+                                    this.sx = 14;
+                                }
+                                else if ((this.anim / 6) % 1 == 0 || (this.anim / 5) % 1 == 0) {
+                                    this.sx = 15;
+                                }
+                                else if ((this.anim / 4) % 1 == 0 || (this.anim / 3) % 1 == 0) {
+                                    this.sx = 16;
+                                }
+                                else if ((this.anim / 2) % 1 == 0 || (this.anim / 1) % 1 == 0) {
+                                    this.sx = 17;
+                                }
+                                this.sy = 1;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                            else {
+                                this.gotoNextTile = true;
+                                this.x = this.nx;
+                                this.y = this.ny;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                        }
+                        else {
+                            this.target_x = this.x;
+                            this.target_y = this.y;
+                            //socket.emit("mov", { x: this.x, y: this.y, id: this.uid });
+                        }
+                    }//end of BR
+
+                    else if (this.target_x == this.x && this.target_y < this.y) { // Move to Top Left
+                        this.dir = 6;
+                        if (this.gotoNextTile) {
+                            this.nx = this.x;
+                            this.ny = this.y - 1;
+                            this.gotoNextTile = false;
+                            this.anim = 0;
+                        }
+                        if (zetta_tile.tile[this.nx][this.ny] == 1 && check_tile(this.nx, this.ny)) {
+                            this.anim++;
+                            this.nprex = draw_start_x + ((this.ny - this.nx) * 32);
+                            this.nprey = (draw_start_y + ((this.ny + this.nx) * 16)) - 100;
+                            if (this.nprex != this.pre_x && this.nprey != this.pre_y) {
+                                if (this.anim >= 50) {
+                                    this.pre_x = this.nprex;
+                                    this.pre_y = this.nprey;
+                                }
+                                if (this.nprex > this.pre_x) {
+                                    this.pre_x += 2;
+                                }
+                                else if (this.nprex < this.pre_x) {
+                                    this.pre_x -= 2;
+                                }
+                                if (this.nprey > this.pre_y) {
+                                    this.pre_y++;
+                                }
+                                else if (this.nprey < this.pre_y) {
+                                    this.pre_y--;
+                                }
+                                if ((this.anim / 12) % 1 == 0 || (this.anim / 11) % 1 == 0) {
+                                    this.sx = 18;
+                                }
+                                else if ((this.anim / 10) % 1 == 0 || (this.anim / 9) % 1 == 0) {
+                                    this.sx = 19;
+                                }
+                                else if ((this.anim / 8) % 1 == 0 || (this.anim / 7) % 1 == 0) {
+                                    this.sx = 20;
+                                }
+                                else if ((this.anim / 6) % 1 == 0 || (this.anim / 5) % 1 == 0) {
+                                    this.sx = 21;
+                                }
+                                else if ((this.anim / 4) % 1 == 0 || (this.anim / 3) % 1 == 0) {
+                                    this.sx = 22;
+                                }
+                                else if ((this.anim / 2) % 1 == 0 || (this.anim / 1) % 1 == 0) {
+                                    this.sx = 23;
+                                }
+                                this.sy = 0;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                            else {
+                                this.gotoNextTile = true;
+                                this.x = this.nx;
+                                this.y = this.ny;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                        }
+                        else {
+                            this.target_x = this.x;
+                            this.target_y = this.y;
+                            //socket.emit("mov", { x: this.x, y: this.y, id: this.uid });
+                        }
+                    }//end of TL
+
+                    else if (this.target_x < this.x && this.target_y > this.y) { // Move to Right
+                        this.dir = 1;
+                        if (this.gotoNextTile) {
+                            this.nx = this.x - 1;
+                            this.ny = this.y + 1;
+                            this.gotoNextTile = false;
+                            this.anim = 0;
+                        }
+                        if (zetta_tile.tile[this.nx][this.ny] == 1 && check_tile(this.nx, this.ny)) {
+                            this.anim++;
+                            this.nprex = draw_start_x + ((this.ny - this.nx) * 32);
+                            this.nprey = (draw_start_y + ((this.ny + this.nx) * 16)) - 100;
+                            if (this.nprex != this.pre_x || this.nprey != this.pre_y) {
+                                if (this.anim >= 50) {
+                                    this.pre_x = this.nprex;
+                                    this.pre_y = this.nprey;
+                                }
+                                if (this.nprex > this.pre_x) {
+                                    this.pre_x += 2;
+                                }
+                                else if (this.nprex < this.pre_x) {
+                                    this.pre_x -= 2;
+                                }
+                                if (this.nprey > this.pre_y) {
+                                    this.pre_y++;
+                                }
+                                else if (this.nprey < this.pre_y) {
+                                    this.pre_y--;
+                                }
+                                if ((this.anim / 12) % 1 == 0 || (this.anim / 11) % 1 == 0) {
+                                    this.sx = 0;
+                                }
+                                else if ((this.anim / 10) % 1 == 0 || (this.anim / 9) % 1 == 0) {
+                                    this.sx = 1;
+                                }
+                                else if ((this.anim / 8) % 1 == 0 || (this.anim / 7) % 1 == 0) {
+                                    this.sx = 2;
+                                }
+                                else if ((this.anim / 6) % 1 == 0 || (this.anim / 5) % 1 == 0) {
+                                    this.sx = 3;
+                                }
+                                else if ((this.anim / 4) % 1 == 0 || (this.anim / 3) % 1 == 0) {
+                                    this.sx = 4;
+                                }
+                                else if ((this.anim / 2) % 1 == 0 || (this.anim / 1) % 1 == 0) {
+                                    this.sx = 5;
+                                }
+
+                                this.sy = 0;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                            else {
+                                this.gotoNextTile = true;
+                                this.x = this.nx;
+                                this.y = this.ny;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                        }
+                        else {
+                            this.target_x = this.x;
+                            this.target_y = this.y;
+                            //socket.emit("mov", { x: this.x, y: this.y, id: this.uid });
+                        }
+                    }//end of right
+
+                    else if (this.target_x > this.x && this.target_y < this.y) { // Move to Left
+                        this.dir = 5;
+                        if (this.gotoNextTile) {
+                            this.nx = this.x + 1;
+                            this.ny = this.y - 1;
+                            this.gotoNextTile = false;
+                            this.anim = 0;
+                        }
+                        if (zetta_tile.tile[this.nx][this.ny] == 1 && check_tile(this.nx, this.ny)) {
+                            this.anim++;
+                            this.nprex = draw_start_x + ((this.ny - this.nx) * 32);
+                            this.nprey = (draw_start_y + ((this.ny + this.nx) * 16)) - 100;
+                            if (this.nprex != this.pre_x || this.nprey != this.pre_y) {
+                                if (this.anim >= 50) {
+                                    this.pre_x = this.nprex;
+                                    this.pre_y = this.nprey;
+                                }
+                                if (this.nprex > this.pre_x) {
+                                    this.pre_x += 2;
+                                }
+                                else if (this.nprex < this.pre_x) {
+                                    this.pre_x -= 2;
+                                }
+                                if (this.nprey > this.pre_y) {
+                                    this.pre_y++;
+                                }
+                                else if (this.nprey < this.pre_y) {
+                                    this.pre_y--;
+                                }
+                                if ((this.anim / 12) % 1 == 0 || (this.anim / 11) % 1 == 0) {
+                                    this.sx = 0;
+                                }
+                                else if ((this.anim / 10) % 1 == 0 || (this.anim / 9) % 1 == 0) {
+                                    this.sx = 1;
+                                }
+                                else if ((this.anim / 8) % 1 == 0 || (this.anim / 7) % 1 == 0) {
+                                    this.sx = 2;
+                                }
+                                else if ((this.anim / 6) % 1 == 0 || (this.anim / 5) % 1 == 0) {
+                                    this.sx = 3;
+                                }
+                                else if ((this.anim / 4) % 1 == 0 || (this.anim / 3) % 1 == 0) {
+                                    this.sx = 4;
+                                }
+                                else if ((this.anim / 2) % 1 == 0 || (this.anim / 1) % 1 == 0) {
+                                    this.sx = 5;
+                                }
+                                this.sy = 1;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                            else {
+                                this.gotoNextTile = true;
+                                this.x = this.nx;
+                                this.y = this.ny;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                        }
+                        else {
+                            this.target_x = this.x;
+                            this.target_y = this.y;
+                            //socket.emit("mov", { x: this.x, y: this.y, id: this.uid });
+                        }
+                    }//end of L
+
+                    else if (this.target_x < this.x && this.target_y < this.y) { // Move to Top
+                        this.dir = 7;
+                        if (this.gotoNextTile) {
+                            this.nx = this.x - 1;
+                            this.ny = this.y - 1;
+                            this.gotoNextTile = false;
+                            this.anim = 0;
+                        }
+                        if (zetta_tile.tile[this.nx][this.ny] == 1 && check_tile(this.nx, this.ny)) {
+                            this.anim++;
+                            this.nprex = draw_start_x + ((this.ny - this.nx) * 32);
+                            this.nprey = (draw_start_y + ((this.ny + this.nx) * 16)) - 100;
+                            if (this.nprex != this.pre_x || this.nprey != this.pre_y) {
+                                if (this.anim >= 50) {
+                                    this.pre_x = this.nprex;
+                                    this.pre_y = this.nprey;
+                                }
+                                if (this.nprex > this.pre_x) {
+                                    this.pre_x += 2;
+                                }
+                                else if (this.nprex < this.pre_x) {
+                                    this.pre_x -= 2;
+                                }
+                                if (this.nprey > this.pre_y) {
+                                    this.pre_y++;
+                                }
+                                else if (this.nprey < this.pre_y) {
+                                    this.pre_y--;
+                                }
+                                if ((this.anim / 12) % 1 == 0 || (this.anim / 11) % 1 == 0) {
+                                    this.sx = 12;
+                                }
+                                else if ((this.anim / 10) % 1 == 0 || (this.anim / 9) % 1 == 0) {
+                                    this.sx = 13;
+                                }
+                                else if ((this.anim / 8) % 1 == 0 || (this.anim / 7) % 1 == 0) {
+                                    this.sx = 14;
+                                }
+                                else if ((this.anim / 6) % 1 == 0 || (this.anim / 5) % 1 == 0) {
+                                    this.sx = 15;
+                                }
+                                else if ((this.anim / 4) % 1 == 0 || (this.anim / 3) % 1 == 0) {
+                                    this.sx = 16;
+                                }
+                                else if ((this.anim / 2) % 1 == 0 || (this.anim / 1) % 1 == 0) {
+                                    this.sx = 17;
+                                }
+                                this.sy = 0;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                            else {
+                                this.gotoNextTile = true;
+                                this.x = this.nx;
+                                this.y = this.ny;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                        }
+                        else {
+                            this.target_x = this.x;
+                            this.target_y = this.y;
+                            //socket.emit("mov", { x: this.x, y: this.y, id: this.uid });
+                        }
+                    }//end of T
+
+                    else if (this.target_x > this.x && this.target_y > this.y) { // Move to Bottom
+                        this.dir = 3;
+                        if (this.gotoNextTile) {
+                            this.nx = this.x + 1;
+                            this.ny = this.y + 1;
+                            this.gotoNextTile = false;
+                            this.anim = 0;
+                        }
+                        if (zetta_tile.tile[this.nx][this.ny] == 1 && check_tile(this.nx, this.ny)) {
+                            this.anim++;
+                            this.nprex = draw_start_x + ((this.ny - this.nx) * 32);
+                            this.nprey = (draw_start_y + ((this.ny + this.nx) * 16)) - 100;
+                            if (this.nprex != this.pre_x || this.nprey != this.pre_y) {
+                                if (this.anim >= 50) {
+                                    this.pre_x = this.nprex;
+                                    this.pre_y = this.nprey;
+                                }
+                                if (this.nprex > this.pre_x) {
+                                    this.pre_x += 2;
+                                }
+                                else if (this.nprex < this.pre_x) {
+                                    this.pre_x -= 2;
+                                }
+                                if (this.nprey > this.pre_y) {
+                                    this.pre_y++;
+                                }
+                                else if (this.nprey < this.pre_y) {
+                                    this.pre_y--;
+                                }
+                                if ((this.anim / 12) % 1 == 0 || (this.anim / 11) % 1 == 0) {
+                                    this.sx = 18;
+                                }
+                                else if ((this.anim / 10) % 1 == 0 || (this.anim / 9) % 1 == 0) {
+                                    this.sx = 19;
+                                }
+                                else if ((this.anim / 8) % 1 == 0 || (this.anim / 7) % 1 == 0) {
+                                    this.sx = 20;
+                                }
+                                else if ((this.anim / 6) % 1 == 0 || (this.anim / 5) % 1 == 0) {
+                                    this.sx = 21;
+                                }
+                                else if ((this.anim / 4) % 1 == 0 || (this.anim / 3) % 1 == 0) {
+                                    this.sx = 22;
+                                }
+                                else if ((this.anim / 2) % 1 == 0 || (this.anim / 1) % 1 == 0) {
+                                    this.sx = 23;
+                                }
+                                this.sy = 1;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                            else {
+                                this.gotoNextTile = true;
+                                this.x = this.nx;
+                                this.y = this.ny;
+                                var tsx = this.sx * 85;
+                                var tsy = this.sy * 170;
+                                ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                                ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                            }
+                        }
+                        else {
+                            this.target_x = this.x;
+                            this.target_y = this.y;
+                            //socket.emit("mov", { x: this.x, y: this.y, id: this.uid });
+                        }
+                    }//end of B
+
+
+                    else {
+                        this.x = this.target_x;
+                        this.y = this.target_y;
+                        this.pre_x = draw_start_x + ((this.y - this.x) * 32);
+                        this.pre_y = (draw_start_y + ((this.y + this.x) * 16)) - 100;
+                        ctx.fillText(this.name, this.pre_x + 16, this.pre_y);
+                        var tsx = this.sx * 85;
+                        var tsy = this.sy * 170;
+                        ctx.drawImage(this.image, tsx, tsy, 85, 170, this.pre_x, this.pre_y, this.width, this.height);
+                    }
+                }
+                else if (this.type == "furni") {
+                    this.pre_x = draw_start_x + ((this.y - this.x) * 32);
+                    this.pre_y = (draw_start_y + ((this.y + this.x) * 16)) - 48;
+                    ctx.drawImage(this.image, this.pre_x, this.pre_y);
+                }
+            }
+        }
+
+        /*
+        function component(width, height, color, x, y, type) {
+            this.type = type;
+            if (type == "image") {
+                this.image = new Image();
+                this.image.src = color;
+            }
+            this.width = width;
+            this.height = height;
+            this.x = x;
+            this.y = y;
+            this.update = function () {
+
+                ctx = zetta_area.context;
+                if (type == "image") {
+                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                } else {
+                    ctx.fillStyle = color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+
+            }
+
+        }
+        */
+
+        function update_zetta() {
+            zetta_area.clear();
+            zetta_area.frameNo++;
+            /*if (everyinterval(150)) {
+                for (var i = 0; i < zetta_player.length; i++) {
+                    zetta_player[i].updates();
+                }
+            }*/
+            zetta_tile.update();
+            zetta_cursor.update();
+            zetta_player.sort(function (a, b) { return a.y - b.y });
+            zetta_player.sort(function (a, b) { return a.x - b.x });
+            for (var i = 0; i < zetta_player.length; i++) {
+                zetta_player[i].update();
+            }
+            for (var i = 0; i < zetta_chat.length; i++) {
+                zetta_chat[i].update();
+            }
+            if (everyinterval(500)) {
+                for (var i = 0; i < zetta_chat.length; i++) {
+                    zetta_chat[i].push_update();
+                }
+            }
+            zetta_cursor.furni();
+            /*for(var i = 0; i < zetta_chat.length; i++){
+                zetta_chat[i].update();
+            }*/
+
+        }
+
+    </script>
+</body>
+
+</html>
