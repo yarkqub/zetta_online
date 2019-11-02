@@ -125,6 +125,8 @@
             style="position:absolute; z-index: 5; border-radius: 4px; border: 1px solid #ccc; padding: 12px 20px; bottom: 5px;"
             placeholder="Click here to chat..." class="w3-display-bottomleft">
 
+        <!--input id="chatbox" style="z-index: 5; width: 80%" class="w3-display-bottommiddle w3-input w3-margin w3-padding-16 w3-round" placeholder="Click here to chat"-->
+
         <img id="tscreen" src="touchscreen.png" usemap="#tscreen" style="position: absolute; top:0px; left:0px;">
         <map id="mapping" name="tscreen"></map>
         <div class="w3-bar" style="position:fixed; top:8px; left:8px">
@@ -138,9 +140,12 @@
                 Credits</div>
         </div>
         <div class="w3-bar" style="position:fixed; top:60px; left:8px">
-            <a href="index.html" class="w3-bar-item w3-small w3-right w3-btn w3-red w3-round"><span class="ui-icon ui-icon-power"></span> &nbsp;</a>
-            <button class="w3-bar-item w3-small w3-right w3-btn w3-blue w3-round"><span class="ui-icon ui-icon-gear"></span></button>
-            <button class="prehide w3-bar-item w3-small w3-right w3-btn w3-blue w3-round" title="Room settings" id="room_settings"><span class="ui-icon ui-icon-home"></span></button>
+            <a href="index.html" class="w3-bar-item w3-small w3-right w3-btn w3-red w3-round"><span
+                    class="ui-icon ui-icon-power"></span> &nbsp;</a>
+            <button class="w3-bar-item w3-small w3-right w3-btn w3-blue w3-round"><span
+                    class="ui-icon ui-icon-gear"></span></button>
+            <button class="prehide w3-bar-item w3-small w3-right w3-btn w3-blue w3-round" title="Room settings"
+                id="room_settings"><span class="ui-icon ui-icon-home"></span></button>
         </div>
 
         <div id="shop_dialog" title="Shop">
@@ -165,9 +170,11 @@
                 <p>Loading....</p>
             </div>
         </div>
-        <div id="settings" class="prehide w3-panel w3-display-container w3-gray w3-display-topright w3-round" style="top:85px;">
+        <div id="settings" class="prehide w3-panel w3-display-container w3-gray w3-display-topright w3-round"
+            style="top:85px;">
             <span onclick="this.parentElement.style.display='none'"
-  class="w3-button w3-display-topright w3-red w3-round"><span class="ui-icon ui-icon-closethick"></span></span>
+                class="w3-button w3-display-topright w3-red w3-round"><span
+                    class="ui-icon ui-icon-closethick"></span></span>
             <h3>Settings</h3>
             <p>
                 <button class="w3-button w3-blue w3-round w3-small">Set door</button>
@@ -404,8 +411,31 @@
             }
         });
 
-        $(document).on("click", "#pickall", function(){
-            socket.emit("pickall");
+        $(document).on("click", "#pickall", function () {
+            //socket.emit("pickall");
+            $("#confirm_content").html("<p>Are you sure want to pick all the furni in this room?</p>");
+            $("#confirmation_dialog").dialog({
+                title: "Conirmation",
+                buttons: [
+                    {
+                        text: "Pick all",
+                        icon: "ui-icon ui-icon-check",
+                        click: function () {
+                            socket.emit("pickall");
+                            $(this).dialog("close");
+                            $("#settings").hide();
+                        }
+                    },
+                    {
+                        text: "Cancel",
+                        icon: "ui-icon ui-icon-closethick",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+            $("#confirmation_dialog").dialog("open");
         })
 
         $(document).on("click", ".inv_item", function () {
@@ -606,7 +636,6 @@
         });
 
         socket.on("mov_player", function (data) {
-            //console.log(data);
             zetta_tmp_player = [];
             for (var i = 0; i < zetta_player.length; i++) {
                 var pre_x = draw_start_x + ((zetta_player[i].y - zetta_player[i].x) * 32);
@@ -640,10 +669,10 @@
             for (var i = 0; i < data.length; i++) {
                 if (data[i].uid == id) {
                     own_room = data[i].own_room;
-                    if(own_room){
+                    if (own_room) {
                         $("#room_settings").show();
                     }
-                    
+
                 }
                 zetta_player.push(new component(64, 110, "char/" + data[i].skin + ".png", data[i].x, data[i].y, data[i].uid, data[i].name, "player", 1, 0, 0));
             }
@@ -747,7 +776,7 @@
 
         });
 
-        $(document).on("click", "#room_settings", function(){
+        $(document).on("click", "#room_settings", function () {
             $("#settings").show();
         });
 
