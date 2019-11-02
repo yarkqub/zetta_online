@@ -46,6 +46,30 @@ io.on('connection', function (socket) {
         }
     });
 
+    socket.on("delete_room", function () {
+        if (typeof socket.len !== "undefined" || typeof players[socket.len] !== "undefined") {
+            conn.query("SELECT uid FROM rooms WHERE id = " + conn.escape(socket.curr_room), function (err, result) {
+                if (result[0].uid == socket.userid) {
+                    //pick all furni
+                    conn.query("UPDATE furnis SET room_id = '0' WHERE room_id = " + conn.escape(socket.curr_room));
+                    conn.query("DELETE FROM rooms WHERE id = " + conn.escape(socket.curr_room));
+                    io.to(socket.curr_room).emit("home_room");
+                    io.to(socket.curr_room).emit('send_msg', {
+                        msg: "Room deleted.",
+                        own: "@SYSTEM"
+                    });
+                    socket.emit('send_msg', {
+                        msg: "Your furni now in your inventory.",
+                        own: "@SYSTEM"
+                    });
+                }
+            });
+        }
+        else {
+            socket.emit("mula");
+        }
+    });
+
     socket.on("pickfurni", function (data) {
         if (typeof socket.len != "undefined") {
             conn.query("SELECT uid FROM rooms WHERE id = " + conn.escape(socket.curr_room), function (err, res) {
@@ -455,7 +479,7 @@ io.on('connection', function (socket) {
                             });
                             socket.emit('send_msg', {
                                 msg: "All furni now in your inventory.",
-                                own: "SYSTEM"
+                                own: "@SYSTEM"
                             });
                         }
                     });
@@ -498,7 +522,7 @@ io.on('connection', function (socket) {
                 });
                 socket.emit('send_msg', {
                     msg: "All furni now in your inventory.",
-                    own: "SYSTEM"
+                    own: "@SYSTEM"
                 });
             }
         });

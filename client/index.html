@@ -180,7 +180,7 @@
                 <button class="w3-button w3-blue w3-round w3-small">Set door</button>
                 <button class="w3-button w3-blue w3-round w3-small" id="pickall">pick all</button>
                 <button class="w3-button w3-blue w3-round w3-small">Edit room</button>
-                <button class="w3-button w3-blue w3-round w3-small">Delete room</button>
+                <button class="w3-button w3-blue w3-round w3-small" id="delete_room">Delete room</button>
             </p>
         </div>
 
@@ -411,6 +411,42 @@
             }
         });
 
+        socket.on("home_room", function () {
+            socket.emit("goto_room", 1)
+        });
+
+        $(document).on("click", "#delete_room", function () {
+            $("#confirm_content").html("<p>Are you sure want to delete this room?");
+            $("#confirmation_dialog").dialog({
+                title: "Warning!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        icon: "ui-icon ui-icon-check",
+                        click: function () {
+                            socket.emit("delete_room");
+                            $("#settings").hide();
+                            $("#room_dialog").dialog("close");
+                            $("#create_room_dialog").dialog("close");
+                            $("#selection").hide();
+                            hold_id = 0;
+                            hold_item = "";
+                            move_item = false;
+                            $(this).dialog("close");
+                        }
+                    },
+                    {
+                        text: "No",
+                        icon: "ui-icon ui-icon-closethick",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+            $("#confirmation_dialog").dialog("open");
+        });
+
         $(document).on("click", "#pickall", function () {
             //socket.emit("pickall");
             $("#confirm_content").html("<p>Are you sure want to pick all the furni in this room?</p>");
@@ -436,7 +472,7 @@
                 ]
             });
             $("#confirmation_dialog").dialog("open");
-        })
+        });
 
         $(document).on("click", ".inv_item", function () {
             $("#inventory_dialog").dialog("close");
@@ -893,10 +929,10 @@
                             ctx.lineTo(pre_x + 64, pre_y);
                             ctx.lineTo(pre_x + 32, pre_y + 16);
                             ctx.closePath();
-                            ctx.fillStyle = "#BAFFFF";
+                            ctx.fillStyle = "#C8EFC9";
                             ctx.fill();
-                            ctx.strokeStyle = "#49DBFF";
-                            ctx.stroke();
+                            //ctx.strokeStyle = "#49DBFF";
+                            //ctx.stroke();
                             //left side
                             ctx.beginPath();
                             ctx.moveTo(pre_x, pre_y);
@@ -904,10 +940,10 @@
                             ctx.lineTo(pre_x + 32, pre_y + 24);
                             ctx.lineTo(pre_x, pre_y + 8);
                             ctx.closePath();
-                            ctx.fillStyle = "#7DD7D1";
+                            ctx.fillStyle = "#7BD87D";
                             ctx.fill();
-                            ctx.strokeStyle = "#2F91CA";
-                            ctx.stroke();
+                            //ctx.strokeStyle = "#2F91CA";
+                            // ctx.stroke();
                             //right side
                             ctx.beginPath();
                             ctx.moveTo(pre_x + 32, pre_y + 16);
@@ -915,10 +951,10 @@
                             ctx.lineTo(pre_x + 64, pre_y + 8);
                             ctx.lineTo(pre_x + 32, pre_y + 24);
                             ctx.closePath();
-                            ctx.fillStyle = "#6FC3C4";
+                            ctx.fillStyle = "#61D063";
                             ctx.fill();
-                            ctx.strokeStyle = "#2988BE";
-                            ctx.stroke();
+                            //ctx.strokeStyle = "#2988BE";
+                            // ctx.stroke();
                         }
                     }
                 }
