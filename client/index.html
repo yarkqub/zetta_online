@@ -177,10 +177,13 @@
                     class="ui-icon ui-icon-closethick"></span></span>
             <h3>Settings</h3>
             <p>
-                <button class="w3-button w3-blue w3-round w3-small">Set door</button>
                 <button class="w3-button w3-blue w3-round w3-small" id="pickall">pick all</button>
-                <button class="w3-button w3-blue w3-round w3-small">Edit room</button>
-                <button class="w3-button w3-blue w3-round w3-small" id="delete_room">Delete room</button>
+                <button class="w3-button w3-blue w3-round w3-small" id="edit_room">Edit room</button>
+                <button class="w3-button w3-red w3-round w3-small" id="delete_room">Delete room</button>
+                <div class="prehide" id="edit_room_option">
+                    <button class="w3-button w3-blue w3-round w3-small">Set door where I stand</button><br>
+                    <label>Room color:</label> <input id="room_color" type="color" value="#C8EFC9">
+                </div>
             </p>
         </div>
 
@@ -244,7 +247,8 @@
         //        console.log(socketConnection.id)
         //    });
 
-        var username, id, hold_item, tetikus_x, tetikus_y, hold_id, rotate_state = 0, own_room = false, move_item = false;
+        var username, id, hold_item, tetikus_x, tetikus_y, hold_id, rotate_state = 0, own_room = false, move_item = false,
+            color_top = "#C8EFC9", color_left = "#7BD87D", color_right = "#61D063";
 
         socket.on("online_cnt", function (data) {
             $(".online_cnt").html(data);
@@ -413,6 +417,56 @@
 
         socket.on("home_room", function () {
             socket.emit("goto_room", 1)
+        });
+
+        $(document).on("change", "#room_color", function () {
+            var color_1 = $(this).val().split("#");
+            var color_01 = color_1[1];
+            var color_2 = color_01.match(/.{1,2}/g);
+            color_left = "";
+            color_right = "";
+            color_top = $(this).val();
+            for (var i = 0; i < color_2.length; i++) {
+                if (parseInt(color_2[i], 16) > 32) {
+                    var tmp_decresed_color = parseInt(color_2[i], 16) - 32;
+                    var tmp_hex_color = tmp_decresed_color.toString(16);
+                    color_left = color_left + tmp_hex_color;
+                }
+                else {
+                    if (parseInt(color_2[i], 16) > 11) {
+                        var tmp_decresed_color = parseInt(color_2[i], 16) - 17;
+                        var tmp_hex_color = tmp_decresed_color.toString(16);
+                        color_left = color_left + tmp_hex_color;
+                    }
+                    else {
+                        color_left = color_left + "00";
+                    }
+                }
+            }
+            for (var i = 0; i < color_2.length; i++) {
+                if (parseInt(color_2[i], 16) > 68) {
+                    var tmp_decresed_color = parseInt(color_2[i], 16) - 68;
+                    var tmp_hex_color = tmp_decresed_color.toString(16);
+                    color_right = color_right + tmp_hex_color;
+                }
+                else {
+                    if (parseInt(color_2[i], 16) > 51) {
+                        var tmp_decresed_color = parseInt(color_2[i], 16) - 51;
+                        var tmp_hex_color = tmp_decresed_color.toString(16);
+                        color_right = color_right + tmp_hex_color;
+                    }
+                    else {
+                        color_right = color_right + "00";
+                    }
+                }
+            }
+            color_left = "#" + color_left;
+            color_right = "#" + color_right;
+            socket.emit("update_color", color_top)
+        });
+
+        $(document).on("click", "#edit_room", function () {
+            $("#edit_room_option").toggle();
         });
 
         $(document).on("click", "#delete_room", function () {
@@ -613,6 +667,49 @@
         $("#tscreen").css({ top: 0, width: window.innerWidth, height: window.innerHeight });
 
         socket.on("change_room", function (data) {
+            var color_1 =data.color.split("#");
+            var color_01 = color_1[1];
+            var color_2 = color_01.match(/.{1,2}/g);
+            color_left = "";
+            color_right = "";
+            color_top = data.color;
+            for (var i = 0; i < color_2.length; i++) {
+                if (parseInt(color_2[i], 16) > 32) {
+                    var tmp_decresed_color = parseInt(color_2[i], 16) - 32;
+                    var tmp_hex_color = tmp_decresed_color.toString(16);
+                    color_left = color_left + tmp_hex_color;
+                }
+                else {
+                    if (parseInt(color_2[i], 16) > 11) {
+                        var tmp_decresed_color = parseInt(color_2[i], 16) - 17;
+                        var tmp_hex_color = tmp_decresed_color.toString(16);
+                        color_left = color_left + tmp_hex_color;
+                    }
+                    else {
+                        color_left = color_left + "00";
+                    }
+                }
+            }
+            for (var i = 0; i < color_2.length; i++) {
+                if (parseInt(color_2[i], 16) > 68) {
+                    var tmp_decresed_color = parseInt(color_2[i], 16) - 68;
+                    var tmp_hex_color = tmp_decresed_color.toString(16);
+                    color_right = color_right + tmp_hex_color;
+                }
+                else {
+                    if (parseInt(color_2[i], 16) > 51) {
+                        var tmp_decresed_color = parseInt(color_2[i], 16) - 51;
+                        var tmp_hex_color = tmp_decresed_color.toString(16);
+                        color_right = color_right + tmp_hex_color;
+                    }
+                    else {
+                        color_right = color_right + "00";
+                    }
+                }
+            }
+            color_left = "#" + color_left;
+            color_right = "#" + color_right;
+
             var zetta_map0 = data.maps;
             var zetta_map1 = zetta_map0.split("#");
             var zetta_map = [];
@@ -813,7 +910,8 @@
         });
 
         $(document).on("click", "#room_settings", function () {
-            $("#settings").show();
+            $("#settings").toggle();
+            $("#edit_room_option").hide();
         });
 
         socket.on("update_pos", function (data) {
@@ -929,7 +1027,7 @@
                             ctx.lineTo(pre_x + 64, pre_y);
                             ctx.lineTo(pre_x + 32, pre_y + 16);
                             ctx.closePath();
-                            ctx.fillStyle = "#C8EFC9";
+                            ctx.fillStyle = color_top;
                             ctx.fill();
                             //ctx.strokeStyle = "#49DBFF";
                             //ctx.stroke();
@@ -940,7 +1038,7 @@
                             ctx.lineTo(pre_x + 32, pre_y + 24);
                             ctx.lineTo(pre_x, pre_y + 8);
                             ctx.closePath();
-                            ctx.fillStyle = "#7BD87D";
+                            ctx.fillStyle = color_left;
                             ctx.fill();
                             //ctx.strokeStyle = "#2F91CA";
                             // ctx.stroke();
@@ -951,7 +1049,7 @@
                             ctx.lineTo(pre_x + 64, pre_y + 8);
                             ctx.lineTo(pre_x + 32, pre_y + 24);
                             ctx.closePath();
-                            ctx.fillStyle = "#61D063";
+                            ctx.fillStyle = color_right;
                             ctx.fill();
                             //ctx.strokeStyle = "#2988BE";
                             // ctx.stroke();

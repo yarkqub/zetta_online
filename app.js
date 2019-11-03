@@ -46,6 +46,25 @@ io.on('connection', function (socket) {
         }
     });
 
+    socket.on("update_color", function(data){
+        if (typeof socket.len !== "undefined" || typeof players[socket.len] !== "undefined") {
+            conn.query("SELECT uid FROM rooms WHERE id = " + conn.escape(socket.curr_room), function(err, result){
+                if(result[0].uid == socket.userid){
+                    conn.query("UPDATE rooms SET color = " + conn.escape(data) + " WHERE id = " + conn.escape(socket.curr_room), function(error){
+                        console.log(error);
+                    });
+                    io.to(socket.curr_room).emit('send_msg', {
+                        msg: "Room color updated.",
+                        own: "@SYSTEM"
+                    });
+                }
+            });
+        }
+        else{
+            socket.emit("mula");
+        }
+    });
+
     socket.on("delete_room", function () {
         if (typeof socket.len !== "undefined" || typeof players[socket.len] !== "undefined") {
             conn.query("SELECT uid FROM rooms WHERE id = " + conn.escape(socket.curr_room), function (err, result) {
@@ -209,7 +228,6 @@ io.on('connection', function (socket) {
     });
 
     socket.on('goto_room', function (data) {
-
         if (typeof socket.len !== "undefined" || typeof players[socket.len] !== "undefined") {
             var old_room = socket.curr_room;
 
@@ -241,8 +259,8 @@ io.on('connection', function (socket) {
 
             io.to(old_room).emit("debug");
 
-            conn.query("SELECT name, maps, door, uid FROM rooms WHERE id = " + conn.escape(data), function (error, result) {
-                socket.emit("change_room", { maps: result[0].maps });
+            conn.query("SELECT name, maps, door, uid, color FROM rooms WHERE id = " + conn.escape(data), function (error, result) {
+                socket.emit("change_room", { maps: result[0].maps, color: result[0].color });
 
                 var door_ = result[0].door.split(",");
                 var door_x = Number(door_[0]);
@@ -586,238 +604,6 @@ io.on('connection', function (socket) {
             socket.emit("mula");
         }
     });
-
-    /*
-    socket.fr_move = 0;
-    socket.on('move_char', function (data) {
-        socket.fr_move++;
-        for (var i = 0; i < players.length; i++) {
-            if (players[i].id == socket.id) {
-                var path = [];
-                var x = players[i].x, y = players[i].y, d = players[i].dir;
-                var X = 0;
-                while (x != data.x || y != data.y) {
-                    X++;
-                    if (X > 50) {
-                        console.log("control break freak movement");
-                        return;
-                    }
-                    if (data.x < x) {
-                        //player target on left
-                        x -= 32;
-                        socket.x = x;
-                        if (data.y < y) {
-                            //left and top \^
-                            d = 5;
-                            y -= 16;
-                            socket.y = y;
-                            for (var m = 0; m < maps.length; m++) {
-                                if (maps[m].x == x) {
-                                    if ((maps[m].y - 88) == y) {
-                                        m = maps.length;
-                                    }
-                                }
-                                else if (m == (maps.length - 1)) {
-                                    x += 32;
-                                    y += 16;
-                                    socket.x = x;
-                                    socket.y = y;
-                                    x = data.x;
-                                    y = data.y;
-                                }
-                            }
-                        }
-                        else if (data.y == y) {
-                            //just straight to left
-                            d = 6;
-                            x -= 32;
-                            socket.x = x;
-                            for (var m = 0; m < maps.length; m++) {
-                                if (maps[m].x == x) {
-                                    if ((maps[m].y - 88) == y) {
-                                        m = maps.length;
-                                    }
-                                }
-                                else if (m == (maps.length - 1)) {
-                                    x += 64;
-                                    //y += 16;
-                                    socket.x = x;
-                                    socket.y = y;
-                                    x = data.x;
-                                    y = data.y;
-                                }
-                            }
-
-                        }
-                        else if (data.y > y) {
-                            //left and bottom /v
-                            d = 7;
-                            y += 16;
-                            socket.y = y;
-                            for (var m = 0; m < maps.length; m++) {
-                                if (maps[m].x == x) {
-                                    if ((maps[m].y - 88) == y) {
-                                        m = maps.length;
-                                    }
-                                }
-                                else if (m == (maps.length - 1)) {
-                                    x += 32;
-                                    y -= 16;
-                                    socket.x = x;
-                                    socket.y = y;
-                                    x = data.x;
-                                    y = data.y;
-                                }
-                            }
-                        }
-
-                    }
-                    else if (data.x == x) {
-                        //up or down only
-                        if (data.y < y) {
-                            //top
-                            d = 4;
-                            y -= 32;
-                            socket.y = y;
-                            for (var m = 0; m < maps.length; m++) {
-                                if (maps[m].x == x) {
-                                    if ((maps[m].y - 88) == y) {
-                                        m = maps.length;
-                                    }
-                                }
-                                else if (m == (maps.length - 1)) {
-                                    //x += 32;
-                                    y += 32;
-                                    socket.x = x;
-                                    socket.y = y;
-                                    x = data.x;
-                                    y = data.y;
-                                }
-                            }
-                        }
-                        else if (data.y > y) {
-                            //bottom
-                            d = 0;
-                            y += 32;
-                            socket.y = y;
-                            for (var m = 0; m < maps.length; m++) {
-                                if (maps[m].x == x) {
-                                    if ((maps[m].y - 88) == y) {
-                                        m = maps.length;
-                                    }
-                                }
-                                else if (m == (maps.length - 1)) {
-                                    //x += 32;
-                                    y -= 32;
-                                    socket.x = x;
-                                    socket.y = y;
-                                    x = data.x;
-                                    y = data.y;
-                                }
-                            }
-                        }
-                    }
-                    else if (data.x > x) {
-                        //target to right
-                        x += 32;
-                        socket.x = x;
-                        if (data.y < y) {
-                            //right and top
-                            d = 3;
-                            y -= 16;
-                            socket.y = y;
-                            for (var m = 0; m < maps.length; m++) {
-                                if (maps[m].x == x) {
-                                    if ((maps[m].y - 88) == y) {
-                                        m = maps.length;
-                                    }
-                                }
-                                else if (m == (maps.length - 1)) {
-                                    x -= 32;
-                                    y += 16;
-                                    socket.x = x;
-                                    socket.y = y;
-                                    x = data.x;
-                                    y = data.y;
-                                }
-                            }
-                        }
-                        else if (data.y == y) {
-                            //just straight to right
-                            d = 2;
-                            x += 32;
-                            socket.x = x;
-                            for (var m = 0; m < maps.length; m++) {
-                                if (maps[m].x == x) {
-                                    if ((maps[m].y - 88) == y) {
-                                        m = maps.length;
-                                    }
-                                }
-                                else if (m == (maps.length - 1)) {
-                                    x -= 64;
-                                    //y -= 16;
-                                    socket.x = x;
-                                    socket.y = y;
-                                    x = data.x;
-                                    y = data.y;
-                                }
-                            }
-                        }
-                        else if (data.y > y) {
-                            //right and top
-                            d = 1;
-                            y += 16;
-                            socket.y = y;
-                            for (var m = 0; m < maps.length; m++) {
-                                if (maps[m].x == x) {
-                                    if ((maps[m].y - 88) == y) {
-                                        m = maps.length;
-                                    }
-                                }
-                                else if (m == (maps.length - 1)) {
-                                    x -= 32;
-                                    y -= 16;
-                                    socket.x = x;
-                                    socket.y = y;
-                                    x = data.x;
-                                    y = data.y;
-                                }
-                            }
-                        }
-                    }
-                    path.push({ "x": socket.x, "y": socket.y, "d": d });
-
-                }//end while
-
-                (function theLoop(index, pa, n, pla) {
-                    setTimeout(function () {
-                        if (pa[n].x) {
-                            socket.x = pla.x = pa[n].x;
-                            socket.y = pla.y = pa[n].y;
-                            pla.dir = pa[n].d;
-                            var tmp_player = [];
-                            players.filter(function (curr) {
-                                if (curr.room == socket.curr_room) { tmp_player.push(curr) }
-                            });
-                            //io.emit('updateroom', tmp_player);
-                            io.to(socket.curr_room).emit('updateroom', tmp_player);
-                            if (n < index && socket.fr_move == 1) {          // If i > 0, keep going || NONO we change if n less then i
-                                n++;
-                                theLoop(index, pa, n, pla);       // Call the loop again, and pass it the current value of i
-                            }
-                            else {
-                                //stop loop
-                                socket.fr_move = 0;
-                            }
-                        }
-
-                    }, 1000);
-                })((path.length - 1), path, 0, players[i]);
-                i = players.length;
-
-            }
-        }
-    });*/
 
     socket.on('login', function (data) {
         if (data.username != "") {
