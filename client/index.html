@@ -418,14 +418,15 @@
         socket.on("home_room", function () {
             socket.emit("goto_room", 1)
         });
-
-        $(document).on("change", "#room_color", function () {
-            var color_1 = $(this).val().split("#");
+        
+        socket.on("update_color", function(data){
+            console.log("change color: " + data);
+            var color_1 = data.split("#");
             var color_01 = color_1[1];
             var color_2 = color_01.match(/.{1,2}/g);
             color_left = "";
             color_right = "";
-            color_top = $(this).val();
+            color_top = data;
             for (var i = 0; i < color_2.length; i++) {
                 if (parseInt(color_2[i], 16) > 32) {
                     var tmp_decresed_color = parseInt(color_2[i], 16) - 32;
@@ -462,7 +463,10 @@
             }
             color_left = "#" + color_left;
             color_right = "#" + color_right;
-            socket.emit("update_color", color_top)
+        });
+
+        $(document).on("change", "#room_color", function () {
+            socket.emit("update_color", $(this).val());
         });
 
         $(document).on("click", "#edit_room", function () {

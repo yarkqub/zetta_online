@@ -50,13 +50,12 @@ io.on('connection', function (socket) {
         if (typeof socket.len !== "undefined" || typeof players[socket.len] !== "undefined") {
             conn.query("SELECT uid FROM rooms WHERE id = " + conn.escape(socket.curr_room), function(err, result){
                 if(result[0].uid == socket.userid){
-                    conn.query("UPDATE rooms SET color = " + conn.escape(data) + " WHERE id = " + conn.escape(socket.curr_room), function(error){
-                        console.log(error);
-                    });
-                    io.to(socket.curr_room).emit('send_msg', {
+                    conn.query("UPDATE rooms SET color = " + conn.escape(data) + " WHERE id = " + conn.escape(socket.curr_room));
+                    socket.emit('send_msg', {
                         msg: "Room color updated.",
                         own: "@SYSTEM"
                     });
+                    io.to(socket.curr_room).emit("update_color", data);
                 }
             });
         }
