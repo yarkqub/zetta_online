@@ -2,8 +2,6 @@
 Zetta Online development
 
 - Create database and extract `database.sql` in your database.
-- Remove folder `node modules`
-- Rmove file `package-lock.json`
 - change password of database in file `app.js`
 - open command promp at directory and run file `npm i`
 === 
@@ -11,3 +9,7 @@ Zetta Online development
 `npm i -g nodemon`
 ===
 - run  `nodemon` in directory
+
+_______________
+
+> No need to push `node_modules` folder and `package.json` file.
