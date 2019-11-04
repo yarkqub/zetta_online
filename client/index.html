@@ -248,7 +248,7 @@
         //    });
 
         var username, id, hold_item, tetikus_x, tetikus_y, hold_id, rotate_state = 0, own_room = false, move_item = false,
-            color_top = "#C8EFC9", color_left = "#7BD87D", color_right = "#61D063";
+            color_top = "#C8EFC9", color_left = "#7BD87D", color_right = "#61D063", name_color = "#FF0000";
 
         socket.on("online_cnt", function (data) {
             $(".online_cnt").html(data);
@@ -418,9 +418,8 @@
         socket.on("home_room", function () {
             socket.emit("goto_room", 1)
         });
-        
-        socket.on("update_color", function(data){
-            console.log("change color: " + data);
+
+        socket.on("update_color", function (data) {
             var color_1 = data.split("#");
             var color_01 = color_1[1];
             var color_2 = color_01.match(/.{1,2}/g);
@@ -467,6 +466,24 @@
 
         $(document).on("change", "#room_color", function () {
             socket.emit("update_color", $(this).val());
+
+            var split_name_color = $(this).val().split("#");
+            var pure_name_color = split_name_color[1];
+            var each_name_color = pure_name_color.match(/.{1,2}/g);
+            name_color = "";
+            for (var i = 0; i < each_name_color.length; i++) {
+                var convert_name_color = parseInt(each_name_color[i], 16);
+                var new_name_color = 255 - convert_name_color;
+                var hex_name_color = new_name_color.toString(16);
+                if(new_name_color < 10){
+                    var hex_name_color = "0" + new_name_color.toString(16);
+                }
+                name_color = name_color + hex_name_color;
+            }
+            name_color = "#" + name_color;
+            if(name_color == "#000000"){
+                name_color = "##e1e1e1";
+            }
         });
 
         $(document).on("click", "#edit_room", function () {
@@ -671,7 +688,8 @@
         $("#tscreen").css({ top: 0, width: window.innerWidth, height: window.innerHeight });
 
         socket.on("change_room", function (data) {
-            var color_1 =data.color.split("#");
+
+            var color_1 = data.color.split("#");
             var color_01 = color_1[1];
             var color_2 = color_01.match(/.{1,2}/g);
             color_left = "";
@@ -713,6 +731,24 @@
             }
             color_left = "#" + color_left;
             color_right = "#" + color_right;
+
+            var split_name_color = color_top.split("#");
+            var pure_name_color = split_name_color[1];
+            var each_name_color = pure_name_color.match(/.{1,2}/g);
+            name_color = "";
+            for (var i = 0; i < each_name_color.length; i++) {
+                var convert_name_color = parseInt(each_name_color[i], 16);
+                var new_name_color = 255 - convert_name_color;
+                var hex_name_color = new_name_color.toString(16);
+                if(new_name_color < 10){
+                    var hex_name_color = "0" + new_name_color.toString(16);
+                }
+                name_color = name_color + hex_name_color;
+            }
+            name_color = "#" + name_color;
+            if(name_color == "#000000"){
+                name_color = "##e1e1e1";
+            }
 
             var zetta_map0 = data.maps;
             var zetta_map1 = zetta_map0.split("#");
@@ -1057,6 +1093,7 @@
                             ctx.fill();
                             //ctx.strokeStyle = "#2988BE";
                             // ctx.stroke();
+                            ctx.fillStyle = name_color;
                         }
                     }
                 }
