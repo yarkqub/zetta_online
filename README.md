@@ -1,7 +1,7 @@
 # zetta_online
 Zetta Online development
 
-This project by Akob, Wave, Musab and Pradana. Make sure you already have NodeJS installed in your machine and you have any mysql server (or host in your machine). Any problem contact me by email myarkqub@gmail.com or telegram: t.me/muhdyarkqub
+This project by Akob, Wave, Musab and Pradana. Make sure you already have NodeJS installed in your machine and you have any mysql server (or host in your machine). Any problem contact me by email myarkqub@gmail.com or telegram: https://t.me/muhdyarkqub
 
 - Create database and extract `database.sql` in your database.
 - change password of database in file `app.js`
